@@ -5,16 +5,15 @@ const { verify } = require('jsonwebtoken');
 module.exports = (req, res, next) => {
 	const token = req.headers.authorization.split(' ')[1];
 	if (!token) {
-		throw new Error('not authenticated');
+		res.status(403).json({ error: 'Not authenticated!' });
 	}
 
 	try {
 		const payload = verify(token, process.env.ACCESS_TOKEN_SECRET);
 		req.payload = payload;
+		return next();
 	} catch (err) {
 		console.log(err);
-		throw new Error('not authenticated');
+		res.status(403).json({ error: 'Not authenticated!' });
 	}
-
-	return next();
 };

@@ -4,17 +4,21 @@ const register = require('../controller/user/register');
 const User = require('../models/User');
 const sendRefreshToken = require('../utils/sendRefreshToken');
 const router = express.Router();
+const isAuth = require('../utils/isAuth');
 
 router.post('/register', register);
 
 router.post('/login', login);
 
-router.get('/bye', (req, res) => {
+router.get('/bye', isAuth, (req, res) => {
 	const payload = req.payload;
-	res.send(`Your userId is ${payload.id}`);
+	// console.log('====================================');
+	// console.log(payload);
+	// console.log('====================================');
+	res.send(`Your userId is ${payload.userId}`);
 });
 
-router.get('/me', async (req, res) => {
+router.get('/me', isAuth, async (req, res) => {
 	try {
 		const payload = req.payload;
 		const user = await User.findOne({ where: { id: payload.id } });
@@ -29,7 +33,7 @@ router.post('/logout', (req, res) => {
 	res.send('Logged out successfully!!!');
 });
 
-router.post('/revoke_refresh_token', async (req, res) => {
+router.post('/revoke_refresh_token', isAuth, async (req, res) => {
 	try {
 		const user = await User.findOne({ where: { id: req.payload.id } });
 		user.tokenVersion = user.tokenVersion + 1;

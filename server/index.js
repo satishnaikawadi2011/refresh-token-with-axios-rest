@@ -25,6 +25,7 @@ app.get('/', (req, res) => {
 
 app.post('/refresh_token', async (req, res) => {
 	const token = req.cookies.jid;
+	// console.log(token);
 	if (!token) {
 		return res.send({ ok: false, accessToken: '' });
 	}
@@ -39,7 +40,7 @@ app.post('/refresh_token', async (req, res) => {
 
 	// token is valid and
 	// we can send back an access token
-	const user = await User.findOne({ id: payload.userId });
+	const user = await User.findOne({ where: { id: payload.userId } });
 
 	if (!user) {
 		return res.send({ ok: false, accessToken: '' });
